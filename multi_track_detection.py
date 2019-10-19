@@ -1,3 +1,4 @@
+# coding=UTF-8
 '''
 先使用Faster-RCNN检测行人并标记
 再用多目标跟踪器进行跟踪
@@ -46,12 +47,12 @@ BORDER = [[142, 171], [101, 339], [283, 339], [296, 171]]
 
 # 将训练好的模型以及标签加载到内存中，方便使用
 def load():
-    tf.reset_default_graph()
-    od_graph_def = tf.GraphDef()
-    with tf.gfile.GFile(PATH_TO_CKPT, 'rb') as fid:
+    tf.compat.v1.reset_default_graph()
+    od_graph_def = tf.compat.v1.GraphDef()
+    with tf.compat.v1.gfile.GFile(PATH_TO_CKPT, 'rb') as fid:
         serialized_graph = fid.read()
         od_graph_def.ParseFromString(serialized_graph)
-        tf.import_graph_def(od_graph_def, name='')
+        tf.compat.v1.import_graph_def(od_graph_def, name='')
     # 载入coco数据集标签文件,将其以index的方式读入内存中
     label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
     categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES,
@@ -91,7 +92,7 @@ def detect_objects(image_np, sess, detection_graph, category_index):
         category_index,
         use_normalized_coordinates=True,
         max_boxes_to_draw=20,
-        min_score_thresh=.7,
+        min_score_thresh=.5,
         line_thickness=8)
     return image_np, new_boxes
 
@@ -99,9 +100,9 @@ def detect_objects(image_np, sess, detection_graph, category_index):
 # 对原始图片的处理
 def process_image(image):
     category_index = load()
-    detection_graph = tf.get_default_graph()
+    detection_graph = tf.compat.v1.get_default_graph()
     with detection_graph.as_default():
-        with tf.Session(graph=detection_graph) as sess:
+        with tf.compat.v1.Session(graph=detection_graph) as sess:
             image_process = detect_objects(image, sess, detection_graph, category_index)
             return image_process
 
@@ -221,8 +222,9 @@ def track_objects(video, object_tracker):
 
 
 if __name__ == '__main__':
-    video = "test_videos/street.mp4"
-    object_tracker = "kcf"
+    # nw003_01
+    video = "test_videos/traffic.mp4"
+    object_tracker = "mil"
     peoples, times = track_objects(video, object_tracker)
     print(peoples)
     # peoples = [1, 1, 2, 4, 5, 6, 2, 4, 1]
@@ -231,8 +233,8 @@ if __name__ == '__main__':
     for people in peoples:
         total_peoples += people
     print("总人数：", total_peoples)
-    per_peoples = total_peoples / (times / 60.0)
-    print("行人密度（每分钟走过的人数）：", per_peoples)
+    per_peoples = total_peoples / (times / 1)
+    print("行人密度（每秒钟走过的人数）：", per_peoples)
     # 直方图折线图显示
     histograms_line(peoples)
 #                        _oo0oo_
