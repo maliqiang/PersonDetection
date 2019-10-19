@@ -31,3 +31,6 @@ ssd_mobilenet_v1_coco_2018_01_28（ssd-mobilenet网络框架）、object_detecti
 
 ## 数据分析图：<br>
 ![](https://github.com/librahfacebook/Detection/blob/master/result_images/analysis.jpg)
+# PersonDetection
+来源 ：https://github.com/librahfacebook/Detection/
+Detection项目的可运行版本，自己运行过程问题解决，补充了依赖库。并且基于TensorFlow2.0环境下对部分API进行了修复，使其可以正常运行。
