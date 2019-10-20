@@ -61,12 +61,12 @@ term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1)
 
 # 将训练好的模型以及标签加载到内存中，方便使用
 def load():
-    tf.reset_default_graph()
-    od_graph_def = tf.GraphDef()
-    with tf.gfile.GFile(PATH_TO_CKPT, 'rb') as fid:
+    tf.compat.v1.reset_default_graph()
+    od_graph_def = tf.compat.v1.GraphDef()
+    with tf.compat.v1.gfile.GFile(PATH_TO_CKPT, 'rb') as fid:
         serialized_graph = fid.read()
         od_graph_def.ParseFromString(serialized_graph)
-        tf.import_graph_def(od_graph_def, name='')
+        tf.compat.v1.import_graph_def(od_graph_def, name='')
     # 载入coco数据集标签文件,将其以index的方式读入内存中
     label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
     categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES,
@@ -114,9 +114,9 @@ def detect_objects(image_np, sess, detection_graph, category_index):
 # 对原始图片的处理
 def process_image(image):
     category_index = load()
-    detection_graph = tf.get_default_graph()
+    detection_graph = tf.compat.v1.get_default_graph()
     with detection_graph.as_default():
-        with tf.Session(graph=detection_graph) as sess:
+        with tf.compat.v1.Session(graph=detection_graph) as sess:
             image_process = detect_objects(image, sess, detection_graph, category_index)
             return image_process
 
@@ -226,5 +226,5 @@ def track_objects(video):
 
 
 if __name__ == '__main__':
-    video = "test_videos/two.mp4"
+    video = "test_videos/street.mp4"
     track_objects(video)
